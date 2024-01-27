@@ -16,13 +16,12 @@ node {
       sh 'docker run -e CI=true hamsa20/docker-react npm run test'
     }
     stage('push image'){
-        step{
-            withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'password', usernameVariable: 'username')]) {
-            sh 'docker login -u ${username} -p ${password} jenkinshamsa.azurecr.io'
-            sh 'docker push jenkinshamsa.azurecr.io/docker-react'
-            }
-        }
-    }
+      app = docker.build('jenkinshamsa.azurecr.io/event-service')
+      docker.withRegistry('https://jenkinshamsa.azurecr.io', 'ACR'){
+          app.push("${ENV_NUMBER}")
+          app.push('latest')
+       }
+    }    
   }
   catch (err) {
     throw err
