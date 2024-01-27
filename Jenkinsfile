@@ -15,10 +15,10 @@ node {
     stage('Docker test'){
       sh 'docker run -e CI=true hamsa20/docker-react npm run test'
     }
-    stage('push image'){
+    stage('Push Image'){
       app = docker.build('jenkinshamsa.azurecr.io/event-service')
       docker.withRegistry('https://jenkinshamsa.azurecr.io', 'ACR'){
-          app.push("${ENV_NUMBER}")
+          app.push("${env.BUILD_NUMBER}")
           app.push('latest')
        }
     }    
