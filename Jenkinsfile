@@ -10,10 +10,10 @@ node {
       sh 'printenv'
     }
     stage('Build Docker'){
-     sh 'docker build -t hamsa20/docker-react -f Dockerfile.dev .'
+     sh 'sudo docker build -t hamsa20/docker-react -f Dockerfile.dev .'
     }
     stage('Docker test'){
-      sh 'docker run -e CI=true hamsa20/docker-react npm run test'
+      sh 'sudo docker run -e CI=true hamsa20/docker-react npm run test'
     }    
   }
   catch (err) {
