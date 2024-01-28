@@ -21,7 +21,23 @@ node {
           app.push("${env.BUILD_NUMBER}")
           app.push('latest')
        }
-    }    
+    }
+    stage('Install Azure CLI'){
+	  sh '''
+            apk add py3-pip
+            apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo make
+            pip install --upgrade pip
+            pip install azure-cli
+            '''
+    } 
+    stage('Deploy Web App'){
+	  withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
+       sh 'az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}'
+      }
+      withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'password', usernameVariable: 'username')]) {
+       sh 'az webapp config container set --name DockerFrontendApp --resource-group Azure-HK --docker-custom-image-name jenkinshamsa.azurecr.io/event-service:latest --docker-registry-server-url https://jenkinshamsa.azurecr.io --docker-registry-server-user ${username} --docker-registry-server-password ${password}'
+      }
+    }
   }
   catch (err) {
     throw err
