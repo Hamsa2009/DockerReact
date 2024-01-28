@@ -22,8 +22,8 @@ node {
           app.push('latest')
        }
     }
-    stage('Install Azure CLI'){
-      sh 'docker pull mcr.microsoft.com/azure-cli'
+    stage('Check Azure CLI'){
+      sh 'az --version'
     } 
     stage('Deploy Web App'){
       withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
