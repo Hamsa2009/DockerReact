@@ -23,15 +23,10 @@ node {
        }
     }
     stage('Install Azure CLI'){
-	  sh '''
-            apk add py3-pip
-            apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo make
-            pip install --upgrade pip
-            pip install azure-cli
-            '''
+      sh 'docker pull mcr.microsoft.com/azure-cli'
     } 
     stage('Deploy Web App'){
-	  withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
+      withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
        sh 'az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}'
       }
       withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'password', usernameVariable: 'username')]) {
