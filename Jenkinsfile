@@ -16,11 +16,19 @@ node {
       sh 'docker run -e CI=true hamsa20/docker-react npm run test'
     }
     stage('Push Image'){
-      app = docker.build('jenkinshamsa.azurecr.io/docker-react')
-      docker.withRegistry('https://jenkinshamsa.azurecr.io', 'ACR'){
-          app.push("${env.BUILD_NUMBER}")
-          app.push('latest')
-       }
+      withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
+      sh '
+        az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+        az acr login --name 'docker-react'
+        docker tag hamsa20/docker-react:latest jenkinshamsa.azurecr.io/docker-react:latest
+        docker push jenkinshamsa.azurecr.io/docker-react:latest
+      '
+      }
+      //app = docker.build('jenkinshamsa.azurecr.io/docker-react')
+      //docker.withRegistry('https://jenkinshamsa.azurecr.io', 'ACR'){
+       //   app.push("${env.BUILD_NUMBER}")
+        //  app.push('latest')
+       //}
     }
     stage('Deploy into Web App'){
       withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
