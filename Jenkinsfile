@@ -10,12 +10,12 @@ node {
       sh 'printenv'
     }
     stage('Build Docker'){
-     sh 'docker build -t hamsa20/docker-react -f Dockerfile .'
+     sh 'docker build -t hamsa20/docker-react -f Dockerfile.dev .'
     }
-    //stage('Docker test'){
-    //  sh 'docker run -e CI=true hamsa20/docker-react npm run test'
-    //}
-    stage('Build, Test & Push Image'){
+    stage('Docker test'){
+      sh 'docker run -e CI=true hamsa20/docker-react npm run test'
+    }
+    stage('Push Image'){
       app = docker.build('jenkinshamsa.azurecr.io/docker-react')
       docker.withRegistry('https://jenkinshamsa.azurecr.io', 'ACR'){
           app.push("${env.BUILD_NUMBER}")
@@ -29,7 +29,7 @@ node {
       withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'password', usernameVariable: 'username')]) {
        sh 'az webapp config container set --name DockerFrontendApp --resource-group Azure-HK --docker-custom-image-name jenkinshamsa.azurecr.io/docker-react:latest --docker-registry-server-url https://jenkinshamsa.azurecr.io --docker-registry-server-user ${username} --docker-registry-server-password ${password}'
       }
-    }
+    }    
   }
   catch (err) {
     throw err
