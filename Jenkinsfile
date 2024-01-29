@@ -10,10 +10,20 @@ node {
       sh 'printenv'
     }
     stage('Build Docker'){
+     if (env.BRANCH_NAME == 'feature') {
      sh 'docker build -t hamsa20/docker-react -f Dockerfile.dev .'
+     }
+     else{
+        sh 'docker build -t hamsa20/docker-react -f Dockerfile .'
+      }
     }
     stage('Docker test'){
+      if (env.BRANCH_NAME == 'feature') {
       sh 'docker run -e CI=true hamsa20/docker-react npm run test'
+      }
+      else{
+        echo "We are in ${env.BRANCH_NAME} branch. Skip Docker test stage"
+      }
     }
     stage('Push Image'){
       withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
