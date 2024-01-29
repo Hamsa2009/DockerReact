@@ -18,9 +18,8 @@ node {
     stage('Push Image'){
       withCredentials([azureServicePrincipal('02721850-4b8f-4fd8-a10d-ba3962133797')]) {
       sh '''
-        az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
-        az acr create --resource-group Azure-HK --name docker-react --sku Basic
-        az acr login --name 'docker-react'
+        az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}        
+        az acr login --name 'Jenkinshamsa'
         docker tag hamsa20/docker-react:latest jenkinshamsa.azurecr.io/docker-react:latest
         docker push jenkinshamsa.azurecr.io/docker-react:latest
       '''
