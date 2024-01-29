@@ -10,7 +10,7 @@ node {
       sh 'printenv'
     }
     stage('Build Docker'){
-     sh 'docker build -t hamsa20/docker-react -f Dockerfile.dev .'
+     sh 'docker build -t hamsa20/docker-react -f Dockerfile .'
     }
     stage('Docker test'){
       sh 'docker run -e CI=true hamsa20/docker-react npm run test'
